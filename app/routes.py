@@ -8,6 +8,7 @@ products_bp = Blueprint('products', __name__)
 def ping():
     return jsonify({"message": "Pong!"})
 
+
 @products_bp.route('/products', methods=['GET'])
 def get_products():
     return get_all_products()
