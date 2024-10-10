@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify, request
-from app.views import get_all_products
+from app.views import get_all_products, post_data
 
 products_bp = Blueprint('products', __name__)
 
@@ -12,3 +12,8 @@ def ping():
 @products_bp.route('/products', methods=['GET'])
 def get_products():
     return get_all_products()
+
+
+@products_bp.route('/uploadCSV', methods=['POST'])
+def post_data_ingest():
+    return post_data()
