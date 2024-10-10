@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "globantapi"
+version = "0.0.1"
+description = "this is a instance for dependece for install every package to use this project test"
+authors = ["mateooh97 <mateooh97@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.3"
+Flask = "^3.0.3"
+gunicorn = "^23.0.0"
+mysql-connector-python = "^9.0.0"
+mysqlclient = "^2.2.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
