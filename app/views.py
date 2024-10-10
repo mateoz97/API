@@ -28,7 +28,7 @@ def post_data():
     
     try:
         df = pd.read_csv(file, header=None, names=['departament_id', 'departament_name'])
-        
+        print(df)
     except Exception as e:
         return f"Error reading CSV: {str(e)}", 400
 

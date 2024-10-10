@@ -29,3 +29,10 @@ CREATE TABLE hired_employed (
         FOREIGN KEY (job_id) REFERENCES jobs(job_id)
 );
 ```
+
+## Endpoints Examples
+
+### Endpoint para subir csv departaments
+```bash
+curl -X POST -F "file=@data/departments.csv" http://127.0.0.1:3000/uploadCSV
+```
