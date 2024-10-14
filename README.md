@@ -19,8 +19,8 @@ CREATE TABLE jobs (
 ```sql
 CREATE TABLE hired_employed (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_name VARCHAR(255) NOT NULL,
-    date_hired DATETIME NOT NULL,
+    employee_name VARCHAR(255)  NULL,
+    date_hired DATETIME  NULL,
     departament_id INT,
     job_id INT,
     CONSTRAINT fk_departament
@@ -33,6 +33,10 @@ CREATE TABLE hired_employed (
 ## Endpoints Examples
 
 ### Endpoint para subir csv departaments
+
+This endpoint allow upload file .CSV with detail where you insert data into table for can you have 
+get register.
+
 ```bash
-curl -X POST -F "file=@data/departments.csv" http://127.0.0.1:3000/uploadCSV
+curl -X POST -F "file=@data/name_file.csv" -F "table=name_table" http://127.0.0.1:5000/uploadCSV
 ```
