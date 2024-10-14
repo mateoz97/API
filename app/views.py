@@ -1,17 +1,32 @@
-from flask import Blueprint, jsonify, request, current_app
-from app.models import  Departments, Jobs, HiredEmployed
+from flask import Blueprint, jsonify, request, current_app, abort
 import pandas as pd
 import mysql.connector
 import numpy as np
+import os
+import fastavro
+import datetime
 
+BACKUP_DIR = 'data/backup'
 
-def get_all_products():
-    pass
-    # cursor = current_app.db.cursor()
-    # cursor.execute("SELECT * FROM products")
-    # rows = cursor.fetchall()
-    # products = [Product.from_db(row).__dict__ for row in rows]
-    # return jsonify(products)
+def getDataTable(table_name):
+    valid_tables = ['departments', 'jobs', 'hired_employed']
+    
+    if table_name not in valid_tables:
+        return jsonify({"error": "Invalid table name"}), 400
+
+    cursor = current_app.db.cursor()
+
+    try:
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+        columns = [column[0] for column in cursor.description]
+        data = [dict(zip(columns, row)) for row in rows]
+        return jsonify(data)
+
+    except mysql.connector.Error as err:
+        abort(500, description=f"Database error: {str(err)}")
+    finally:
+        cursor.close()
 
 
 def validate_data(table_name, row):
@@ -114,3 +129,66 @@ def post_data():
             current_app.db.close()
 
     return jsonify({"error": "Invalid file format"}), 400
+
+
+def backupAVRO(table_name):
+    cursor = None
+    try:
+        cursor = current_app.db.cursor(dictionary=True)
+
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+
+        if not rows:
+            return f"No data found in table {table_name}."
+
+
+        cursor.execute(f"DESCRIBE {table_name}")
+        table_description = cursor.fetchall()
+        schema_fields = []
+        for column in table_description:
+            column_name = column['Field']
+            column_type = column['Type']
+            if 'int' in column_type:
+                schema_fields.append({'name': column_name, 'type': ['null', 'int']})
+            elif 'float' in column_type or 'double' in column_type:
+                schema_fields.append({'name': column_name, 'type': ['null', 'float']})
+            elif 'varchar' in column_type or 'text' in column_type or 'char' in column_type:
+                schema_fields.append({'name': column_name, 'type': ['null', 'string']})
+            elif 'date' in column_type or 'datetime' in column_type:
+                schema_fields.append({'name': column_name, 'type': ['null', 'string']})
+            else:
+                schema_fields.append({'name': column_name, 'type': ['null', 'string']})
+
+        schema = {
+            'name': table_name,
+            'type': 'record',
+            'fields': schema_fields
+        }
+
+
+        if not os.path.exists(BACKUP_DIR):
+            os.makedirs(BACKUP_DIR)
+
+
+        backup_file = os.path.join(BACKUP_DIR, f"{table_name}.avro")
+
+
+        for row in rows:
+            for key, value in row.items():
+                if isinstance(value, datetime.datetime):
+                    row[key] = value.strftime('%Y-%m-%d %H:%M:%S')  
+
+
+        with open(backup_file, 'wb') as out:
+            fastavro.writer(out, schema, rows)  
+
+        return f"Backup for table {table_name} saved as {backup_file}"
+
+    except mysql.connector.Error as err:
+        return f"Database error: {str(err)}"
+    except Exception as e:
+        return f"Error during backup: {type(e).__name__} - {str(e)}"
+    finally:
+        if cursor:
+            cursor.close()
