@@ -10,7 +10,7 @@ class Product:
     def from_db(row):
         return Product(row[0], row[1], row[2], row[3])
 
-class Departaments:
+class Departments:
     
     def __init__(self, departament_id, departament_name):
         self.departament_id = departament_id
@@ -18,7 +18,7 @@ class Departaments:
 
     @staticmethod
     def from_db(row):
-        return Departaments(row[0], row[1])
+        return Departments(row[0], row[1])
 
 
 class Jobs:
