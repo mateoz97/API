@@ -46,7 +46,7 @@ Endpoint: `GET /tables/<table_name>`
 
 Example:
 ```bash
-curl -X GET http://127.0.0.1:5000/tables/<table_name>
+curl -X GET https://globantapi-565552294938.us-central1.run.app/table/<table_name>
 ```
 
 
@@ -63,7 +63,7 @@ Parameters:
 Example:
 
 ```bash
-curl -X POST -F "file=@data/name_file.csv" -F "table=name_table" http://127.0.0.1:5000/uploadCSV
+curl -X POST -F "file=@data/name_file.csv" -F "table=name_table" https://globantapi-565552294938.us-central1.run.app/uploadCSV
 ```
 
 
@@ -75,7 +75,7 @@ Endpoint: `POST /backup/<table_name>`
 Example:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/backup/<table_name>
+curl -X POST https://globantapi-565552294938.us-central1.run.app/backup/<table_name>
 ```
 
 ### 4. Restore a Table from Backup
@@ -86,7 +86,7 @@ Endpoint: `POST /restore/<table_name>`
 Example:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/restore/<table_name>
+curl -X POST https://globantapi-565552294938.us-central1.run.app/restore/<table_name>
 ```
 
 ## Installation and Dependencies
