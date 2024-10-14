@@ -30,6 +30,4 @@ def backup(table_name):
 def restore_data(table_name):
     if table_name not in ['departments', 'jobs', 'hired_employed']:
         return jsonify({"error": "Invalid table name"}), 400
-
-    result = restoreAVRO(table_name)
-    return jsonify({"message": result}), 200
+    return restoreAVRO(table_name)
