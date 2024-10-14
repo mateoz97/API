@@ -39,6 +39,8 @@ CREATE TABLE hired_employed (
 ```
 
 #### Challenged #2
+Number of employees hired for each job and department in 2021 divided by quarter. The
+table must be ordered alphabetically by department and job.
 ```sql
 SELECT 
   d.departament_name,
@@ -53,6 +55,34 @@ JOIN departments d ON he.departament_id = d.departament_id
 WHERE EXTRACT(YEAR FROM he.date_hired) = 2021
 GROUP BY 1,2
 ORDER BY 1,2
+```
+
+List of ids, name and number of employees hired of each department that hired more
+employees than the mean of employees hired in 2021 for all the departments, ordered
+by the number of employees hired (descending).
+```sql
+WITH department_hires AS (
+    SELECT 
+        d.departament_id AS id,
+        d.departament_name AS department,
+        COUNT(he.id) AS hired
+    FROM hired_employed he
+    JOIN departments d ON he.departament_id = d.departament_id
+    WHERE EXTRACT(YEAR FROM he.date_hired) = 2021
+    GROUP BY 1,2
+), average_hires AS (
+    SELECT 
+      AVG(hired) AS avg_hired
+    FROM department_hires
+)
+SELECT 
+    dh.id,
+    dh.department,
+    dh.hired
+FROM department_hires dh
+JOIN average_hires ah ON dh.hired > ah.avg_hired
+ORDER BY 3 DESC;
+
 ```
 
 ## API Endpoints
