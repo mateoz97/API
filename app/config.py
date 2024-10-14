@@ -14,3 +14,4 @@ class DBconfig:
     MYSQL_USER = 'teo'
     MYSQL_PASSWORD = 'Kiminomichimade1997*'
     MYSQL_DATABASE = 'GlobantAPI'
+
