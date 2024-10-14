@@ -193,6 +193,37 @@ def backupAVRO(table_name):
         if cursor:
             cursor.close()
 
-
 def restoreAVRO(table_name):
-    pass
+    if table_name not in ['departments', 'jobs', 'hired_employed']:
+        return jsonify({"error": "Invalid table name"}), 400
+
+    if 'file' not in request.files or request.files['file'].filename == '':
+        return jsonify({"error": "No file part or empty filename"}), 400
+
+    file = request.files['file']
+
+    if not file.filename.endswith('.avro'):
+        return jsonify({"error": "File is not an AVRO"}), 400
+
+    try:
+        reader = fastavro.reader(file)
+        cursor = current_app.db.cursor()
+
+        for record in reader:
+            columns = ', '.join(record.keys())
+            placeholders = ', '.join(['%s'] * len(record))
+            insert_query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+
+            cursor.execute(insert_query, list(record.values()))
+
+        current_app.db.commit()
+        return jsonify({"message": f"Data restored successfully to {table_name}"}), 201
+
+    except mysql.connector.Error as err:
+        current_app.db.rollback()
+        return jsonify({"error": f"Database error: {str(err)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error restoring data: {str(e)}"}), 400
+    finally:
+        if cursor:
+            cursor.close()
