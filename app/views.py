@@ -223,3 +223,91 @@ def restoreAVRO(table_name):
     finally:
         if cursor:
             cursor.close()
+
+def getReportQuarter(year):
+    cursor = None
+    try:
+        cursor = current_app.db.cursor(dictionary=True)
+
+        if not year.isdigit() or len(year) != 4:
+            return jsonify({"error": "Invalid year format"}), 400
+
+        query = """
+        SELECT 
+          d.departament_name,
+          p.job_name,
+          COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 1 THEN he.id END) AS Q1,
+          COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 2 THEN he.id END) AS Q2,
+          COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 3 THEN he.id END) AS Q3,
+          COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 4 THEN he.id END) AS Q4
+        FROM hired_employed he
+        JOIN jobs p ON he.job_id = p.job_id
+        JOIN departments d ON he.departament_id = d.departament_id
+        WHERE EXTRACT(YEAR FROM he.date_hired) = %s
+        GROUP BY d.departament_name, p.job_name
+        ORDER BY d.departament_name, p.job_name;
+        """
+
+        cursor.execute(query, (year,))
+        rows = cursor.fetchall()
+
+        if not rows:
+            return jsonify({"message": f"No data found for year {year}."}), 404
+
+        return jsonify(rows)
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {str(err)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error during processing: {type(e).__name__} - {str(e)}"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+
+def getReportDepart(year):
+    cursor = None
+    try:
+        cursor = current_app.db.cursor(dictionary=True)
+
+        if not year.isdigit() or len(year) != 4:
+            return jsonify({"error": "Invalid year format"}), 400
+
+        query = """
+        WITH department_hires AS (
+            SELECT 
+                d.departament_id AS id,
+                d.departament_name AS department,
+                COUNT(he.id) AS hired
+            FROM hired_employed he
+            JOIN departments d ON he.departament_id = d.departament_id
+            WHERE EXTRACT(YEAR FROM he.date_hired) = %s
+            GROUP BY 1,2
+        ), average_hires AS (
+            SELECT 
+            AVG(hired) AS avg_hired
+            FROM department_hires
+        )
+        SELECT 
+            dh.id,
+            dh.department,
+            dh.hired
+        FROM department_hires dh
+        JOIN average_hires ah ON dh.hired > ah.avg_hired
+        ORDER BY 3 DESC;
+        """
+
+        cursor.execute(query, (year,))
+        rows = cursor.fetchall()
+
+        if not rows:
+            return jsonify({"message": f"No data found for year {year}."}), 404
+
+        return jsonify(rows)
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {str(err)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error during processing: {type(e).__name__} - {str(e)}"}), 500
+    finally:
+        if cursor:
+            cursor.close()

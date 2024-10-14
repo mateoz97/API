@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify, request
-from app.views import getDataTable, post_data, backupAVRO, restoreAVRO
+from app.views import getDataTable, post_data, backupAVRO, restoreAVRO, getReportQuarter, getReportDepart
 
 products_bp = Blueprint('products', __name__)
 
@@ -31,3 +31,12 @@ def restore_data(table_name):
     if table_name not in ['departments', 'jobs', 'hired_employed']:
         return jsonify({"error": "Invalid table name"}), 400
     return restoreAVRO(table_name)
+
+@products_bp.route('/reportquarter/<year>', methods=['GET'])
+def report_quarter(year):
+    return getReportQuarter(year)
+
+
+@products_bp.route('/reportdepart/<year>', methods=['GET'])
+def report_depart(year):
+    return getReportDepart(year)

@@ -38,6 +38,23 @@ CREATE TABLE hired_employed (
 );
 ```
 
+#### Challenged #2
+```sql
+SELECT 
+  d.departament_name,
+  p.job_name,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 1 THEN he.id END) AS Q1,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 2 THEN he.id END) AS Q2,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 3 THEN he.id END) AS Q3,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 4 THEN he.id END) AS Q4
+FROM hired_employed he
+JOIN jobs p ON he.job_id = p.job_id
+JOIN departments d ON he.departament_id = d.departament_id
+WHERE EXTRACT(YEAR FROM he.date_hired) = 2021
+GROUP BY 1,2
+ORDER BY 1,2
+```
+
 ## API Endpoints
 ### 1. Get Table Data
 This endpoint allows you to view the content of any table in JSON format.
