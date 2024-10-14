@@ -38,6 +38,23 @@ CREATE TABLE hired_employed (
 );
 ```
 
+#### Challenged #2
+```sql
+SELECT 
+  d.departament_name,
+  p.job_name,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 1 THEN he.id END) AS Q1,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 2 THEN he.id END) AS Q2,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 3 THEN he.id END) AS Q3,
+  COUNT(CASE WHEN EXTRACT(QUARTER FROM he.date_hired) = 4 THEN he.id END) AS Q4
+FROM hired_employed he
+JOIN jobs p ON he.job_id = p.job_id
+JOIN departments d ON he.departament_id = d.departament_id
+WHERE EXTRACT(YEAR FROM he.date_hired) = 2021
+GROUP BY 1,2
+ORDER BY 1,2
+```
+
 ## API Endpoints
 ### 1. Get Table Data
 This endpoint allows you to view the content of any table in JSON format.
@@ -46,7 +63,7 @@ Endpoint: `GET /tables/<table_name>`
 
 Example:
 ```bash
-curl -X GET http://127.0.0.1:5000/tables/<table_name>
+curl -X GET https://globantapi-565552294938.us-central1.run.app/table/<table_name>
 ```
 
 
@@ -63,7 +80,7 @@ Parameters:
 Example:
 
 ```bash
-curl -X POST -F "file=@data/name_file.csv" -F "table=name_table" http://127.0.0.1:5000/uploadCSV
+curl -X POST -F "file=@data/name_file.csv" -F "table=name_table" https://globantapi-565552294938.us-central1.run.app/uploadCSV
 ```
 
 
@@ -75,7 +92,7 @@ Endpoint: `POST /backup/<table_name>`
 Example:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/backup/<table_name>
+curl -X POST https://globantapi-565552294938.us-central1.run.app/backup/<table_name>
 ```
 
 ### 4. Restore a Table from Backup
@@ -86,7 +103,7 @@ Endpoint: `POST /restore/<table_name>`
 Example:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/restore/<table_name>
+curl -X POST https://globantapi-565552294938.us-central1.run.app/restore/<table_name>
 ```
 
 ## Installation and Dependencies
@@ -120,6 +137,38 @@ poetry shell
 Run the Flask server:
 ```bash
 python main.py
+```
+
+### Manage Dockergile with Cloud Run
+- upload docker file
+```docker
+docker build -t globantapi .
+```
+
+- run image docker
+```docker
+docker run -p 5000:5000 globantapi
+```
+
+- set docker
+```docker
+gcloud auth configure-docker
+```
+
+- Create tag docker
+```docker
+docker tag globantapi gcr.io/testeoz-2024/globantapi
+```
+
+- push tag docker to conteiner registry
+```docker
+docker push gcr.io/testeoz-2024/globantapi
+```
+
+## Deploy Cloud run
+
+```bash
+gcloud run deploy globantapi --image gcr.io/testeoz-2024/globantapi --platform managed --region us-central1 --allow-unauthenticated
 ```
 
 ## Important Note
