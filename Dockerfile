@@ -1,23 +1,17 @@
-# Usa una imagen base ligera de Python
-FROM python:3.11-slim
+FROM python:3.11
 
-# Instala Poetry
+WORKDIR /usr/src/app
+
+COPY pyproject.toml poetry.lock ./
+
 RUN pip install poetry
 
-# Establece el directorio de trabajo
-WORKDIR /API
+RUN poetry install --no-dev
 
-# Copia el archivo pyproject.toml y poetry.lock
-COPY pyproject.toml poetry.lock* /API/
 
-# Instala las dependencias usando Poetry
-RUN poetry config virtualenvs.create false && poetry install --no-dev
+COPY app ./app
+COPY data ./data
 
-# Copia el código de la aplicación
-COPY . .
+EXPOSE 5000
 
-# Expone el puerto 8080
-EXPOSE 8080
-
-# Define el comando de ejecución para la aplicación
-CMD ["poetry", "run", "gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0", "--port=5000"]

@@ -122,6 +122,38 @@ Run the Flask server:
 python main.py
 ```
 
+### Manage Dockergile with Cloud Run
+- upload docker file
+```docker
+docker build -t globantapi .
+```
+
+- run image docker
+```docker
+docker run -p 5000:5000 globantapi
+```
+
+- set docker
+```docker
+gcloud auth configure-docker
+```
+
+- Create tag docker
+```docker
+docker tag globantapi gcr.io/testeoz-2024/globantapi
+```
+
+- push tag docker to conteiner registry
+```docker
+docker push gcr.io/testeoz-2024/globantapi
+```
+
+## Deploy Cloud run
+
+```bash
+gcloud run deploy globantapi --image gcr.io/testeoz-2024/globantapi --platform managed --region us-central1 --allow-unauthenticated
+```
+
 ## Important Note
 This project uses mysql-connector-python instead of SQLAlchemy for database interaction. This decision was made due to complications encountered when installing SQLAlchemy on Ubuntu. By using mysql-connector-python, we saved time and avoided potential compatibility issues, while still maintaining an efficient way to handle database connections and queries.
 
