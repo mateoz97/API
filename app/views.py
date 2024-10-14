@@ -192,3 +192,7 @@ def backupAVRO(table_name):
     finally:
         if cursor:
             cursor.close()
+
+
+def restoreAVRO(table_name):
+    pass

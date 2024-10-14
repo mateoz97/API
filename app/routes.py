@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify, request
-from app.views import getDataTable, post_data, backupAVRO
+from app.views import getDataTable, post_data, backupAVRO, restoreAVRO
 
 products_bp = Blueprint('products', __name__)
 
@@ -24,4 +24,12 @@ def backup(table_name):
         return jsonify({"error": "Invalid table name"}), 400
 
     result = backupAVRO(table_name)
+    return jsonify({"message": result}), 200
+
+@products_bp.route('/restore/<table_name>', methods=['POST'])
+def restore_data(table_name):
+    if table_name not in ['departments', 'jobs', 'hired_employed']:
+        return jsonify({"error": "Invalid table name"}), 400
+
+    result = restoreAVRO(table_name)
     return jsonify({"message": result}), 200
