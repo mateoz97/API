@@ -3,6 +3,11 @@
 ## Introduction
 This API allows managing **departments**, **jobs**, and **hired employees** tables, with the ability to upload CSV data, perform backups, and restore tables. The project uses a MySQL database.
 
+## Architecture
+
+![Architecture API](image/globantapi.drawio.svg)
+
+
 ## Data Model and Tables
 ### SQL Table Creation
 Below are the SQL queries needed to create the database tables:
