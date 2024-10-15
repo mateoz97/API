@@ -90,9 +90,9 @@ ORDER BY 3 DESC;
 
 ```
 
-# Reporte de Análisis
+# Analytics Report
 
-Puedes acceder al tablero de Looker [aquí](https://lookerstudio.google.com/reporting/da96f343-4313-4d8b-89f6-7f91170e485a).
+You can dashboard report [here](https://lookerstudio.google.com/reporting/da96f343-4313-4d8b-89f6-7f91170e485a).
 
 
 
