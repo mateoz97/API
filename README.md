@@ -85,6 +85,13 @@ ORDER BY 3 DESC;
 
 ```
 
+# Reporte de Análisis
+
+Puedes acceder al tablero de Looker [aquí](https://lookerstudio.google.com/reporting/da96f343-4313-4d8b-89f6-7f91170e485a).
+
+
+
+
 ## API Endpoints
 ### 1. Get Table Data
 This endpoint allows you to view the content of any table in JSON format.
